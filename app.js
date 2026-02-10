@@ -297,11 +297,23 @@ function renderLibrary(entries) {
 }
 
 function setupLibrary() {
-    // Search
     const searchInput = document.getElementById('library-search');
-    searchInput.addEventListener('input', () => {
+    const filterBar = document.getElementById('library-filters');
+
+    // Auto-generate category filter buttons from data
+    const categories = [...new Set(LIBRARY.map(e => e.category))].sort();
+    categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn';
+        btn.dataset.filter = cat;
+        btn.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+        filterBar.appendChild(btn);
+    });
+
+    // Filter + search helper
+    function applyFilters() {
         const query = searchInput.value.toLowerCase();
-        const activeFilter = document.querySelector('#library-filters .filter-btn.active').dataset.filter;
+        const activeFilter = filterBar.querySelector('.filter-btn.active').dataset.filter;
         let filtered = LIBRARY;
         if (activeFilter !== 'all') filtered = filtered.filter(e => e.category === activeFilter);
         if (query) filtered = filtered.filter(e =>
@@ -311,23 +323,17 @@ function setupLibrary() {
             (e.tags || []).some(t => t.toLowerCase().includes(query))
         );
         renderLibrary(filtered);
-    });
+    }
+
+    // Search
+    searchInput.addEventListener('input', applyFilters);
 
     // Category filters
-    const filterBar = document.getElementById('library-filters');
     filterBar.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             filterBar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            const filter = btn.dataset.filter;
-            const query = searchInput.value.toLowerCase();
-            let filtered = filter === 'all' ? LIBRARY : LIBRARY.filter(e => e.category === filter);
-            if (query) filtered = filtered.filter(e =>
-                e.title.toLowerCase().includes(query) ||
-                e.summary.toLowerCase().includes(query) ||
-                e.content.toLowerCase().includes(query)
-            );
-            renderLibrary(filtered);
+            applyFilters();
         });
     });
 }

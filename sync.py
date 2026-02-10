@@ -25,15 +25,31 @@ WORKSPACE = Path('/root/.openclaw/workspace')
 ARCHIVE_DIR = Path('/root/.openclaw/memory-archive')
 LIBRARY_JS = ARCHIVE_DIR / 'library.js'
 
-# Directories to index
-SOURCE_DIRS = {
-    'research': WORKSPACE / 'research',
-    'dev': WORKSPACE / 'dev',
-    'management': WORKSPACE / 'management',
+# Directories to SKIP (system/internal folders, not knowledge)
+SKIP_DIRS = {
+    'memory', 'tasks', 'persona-chat', 'fox-art', 'post-office',
+    '.git', '__pycache__', 'node_modules', 'credentials',
 }
 
-# Files to skip (queues, templates, protocols)
+# Files to skip (queues, templates, protocols, system files)
 SKIP_FILES = {'queue.md', 'TEMPLATE.md', 'PROTOCOL.md', 'CREATIVE-PROTOCOL.md', 'creative-queue.md'}
+
+
+def discover_source_dirs() -> dict:
+    """Auto-discover knowledge directories in workspace.
+    Any subdirectory containing .md files that isn't in SKIP_DIRS gets indexed."""
+    dirs = {}
+    for item in sorted(WORKSPACE.iterdir()):
+        if not item.is_dir():
+            continue
+        if item.name in SKIP_DIRS or item.name.startswith('.'):
+            continue
+        md_files = list(item.glob('*.md'))
+        # Only include dirs with actual content files (not just queue.md)
+        content_files = [f for f in md_files if f.name not in SKIP_FILES]
+        if content_files:
+            dirs[item.name] = item
+    return dirs
 
 
 def extract_title(content: str, filename: str) -> str:
@@ -118,9 +134,10 @@ def escape_js_string(s: str) -> str:
 
 def scan_files() -> list:
     """Scan all source directories and build library entries."""
+    source_dirs = discover_source_dirs()
     entries = []
 
-    for category, dir_path in SOURCE_DIRS.items():
+    for category, dir_path in source_dirs.items():
         if not dir_path.exists():
             continue
 
@@ -188,9 +205,12 @@ def git_push(message: str):
 
 
 def main():
+    print('Discovering knowledge directories...')
+    source_dirs = discover_source_dirs()
+    print(f'Found directories: {", ".join(source_dirs.keys())}')
     print('Scanning knowledge files...')
     entries = scan_files()
-    print(f'Found {len(entries)} library entries across {len(SOURCE_DIRS)} categories')
+    print(f'Found {len(entries)} library entries across {len(source_dirs)} categories')
 
     print('Generating library.js...')
     js_content = generate_library_js(entries)
