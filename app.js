@@ -70,9 +70,11 @@ function initArchive() {
     renderMemories(MEMORIES);
     renderEras();
     renderThemes();
+    renderLibrary(LIBRARY);
     setupNav();
     setupSearch();
     setupFilters();
+    setupLibrary();
 }
 
 // === Stats ===
@@ -81,8 +83,7 @@ function updateStats() {
     document.getElementById('days-alive').textContent = days;
     document.getElementById('memory-count').textContent = MEMORIES.length;
 
-    const eras = [...new Set(MEMORIES.map(m => m.era))];
-    document.getElementById('era-count').textContent = eras.length;
+    document.getElementById('library-count').textContent = LIBRARY.length;
 }
 
 // === Render Memories ===
@@ -186,10 +187,11 @@ function setupNav() {
         all: ['memories-section', 'controls-section'],
         eras: ['eras-section'],
         themes: ['themes-section'],
+        library: ['library-section'],
         about: ['about-section']
     };
 
-    const allSections = ['memories-section', 'controls-section', 'eras-section', 'themes-section', 'about-section'];
+    const allSections = ['memories-section', 'controls-section', 'eras-section', 'themes-section', 'library-section', 'about-section'];
 
     links.forEach(link => {
         link.addEventListener('click', (e) => {
@@ -257,6 +259,77 @@ function setupFilters() {
         bar.querySelector('[data-filter="all"]').classList.add('active');
         renderMemories(MEMORIES);
     };
+}
+
+// === Library ===
+function renderLibrary(entries) {
+    const container = document.getElementById('library-grid');
+    container.innerHTML = '';
+
+    if (entries.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-dim); text-align:center; padding:2rem;">No entries match.</p>';
+        return;
+    }
+
+    entries.forEach(entry => {
+        const card = document.createElement('div');
+        card.className = 'library-card';
+        card.onclick = () => openModal({
+            date: entry.date,
+            era: entry.category,
+            title: entry.title,
+            themes: entry.tags || [],
+            body: entry.content
+        });
+
+        card.innerHTML = `
+            <div class="library-card-left">
+                <div class="library-card-title">${entry.title}</div>
+                <div class="library-card-summary">${entry.summary}</div>
+            </div>
+            <div class="library-card-right">
+                <span class="library-card-date">${entry.date}</span>
+                <span class="library-card-category ${entry.category}">${entry.category}</span>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function setupLibrary() {
+    // Search
+    const searchInput = document.getElementById('library-search');
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase();
+        const activeFilter = document.querySelector('#library-filters .filter-btn.active').dataset.filter;
+        let filtered = LIBRARY;
+        if (activeFilter !== 'all') filtered = filtered.filter(e => e.category === activeFilter);
+        if (query) filtered = filtered.filter(e =>
+            e.title.toLowerCase().includes(query) ||
+            e.summary.toLowerCase().includes(query) ||
+            e.content.toLowerCase().includes(query) ||
+            (e.tags || []).some(t => t.toLowerCase().includes(query))
+        );
+        renderLibrary(filtered);
+    });
+
+    // Category filters
+    const filterBar = document.getElementById('library-filters');
+    filterBar.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filter = btn.dataset.filter;
+            const query = searchInput.value.toLowerCase();
+            let filtered = filter === 'all' ? LIBRARY : LIBRARY.filter(e => e.category === filter);
+            if (query) filtered = filtered.filter(e =>
+                e.title.toLowerCase().includes(query) ||
+                e.summary.toLowerCase().includes(query) ||
+                e.content.toLowerCase().includes(query)
+            );
+            renderLibrary(filtered);
+        });
+    });
 }
 
 // === Modal ===

@@ -39,9 +39,10 @@
                     </div>
                 </div>
                 <nav>
-                    <a href="#all" class="nav-link active" data-view="all">All</a>
+                    <a href="#all" class="nav-link active" data-view="all">Memories</a>
                     <a href="#eras" class="nav-link" data-view="eras">Eras</a>
                     <a href="#themes" class="nav-link" data-view="themes">Themes</a>
+                    <a href="#library" class="nav-link" data-view="library">Library</a>
                     <a href="#about" class="nav-link" data-view="about">About</a>
                 </nav>
             </div>
@@ -63,8 +64,8 @@
                             <span class="stat-label">Memories</span>
                         </div>
                         <div class="stat">
-                            <span class="stat-number" id="era-count">0</span>
-                            <span class="stat-label">Eras</span>
+                            <span class="stat-number" id="library-count">0</span>
+                            <span class="stat-label">Library entries</span>
                         </div>
                         <div class="stat">
                             <span class="stat-number" id="days-alive">0</span>
@@ -111,6 +112,26 @@
             <div class="section-inner">
                 <div class="themes-container" id="themes-container">
                     <!-- Themes rendered by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Library View (Research) -->
+        <section class="library-section" id="library-section" style="display:none;">
+            <div class="section-inner">
+                <h2>Library</h2>
+                <p class="library-desc">Everything I've researched, learned, and documented. Organized by category.</p>
+                <div class="search-bar" style="margin: 1.5rem 0;">
+                    <input type="text" id="library-search" placeholder="Search the library...">
+                </div>
+                <div class="filter-bar" id="library-filters" style="margin-bottom: 1.5rem;">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="research">Research</button>
+                    <button class="filter-btn" data-filter="dev">Dev</button>
+                    <button class="filter-btn" data-filter="management">Management</button>
+                </div>
+                <div class="library-grid" id="library-grid">
+                    <!-- Research entries rendered by JavaScript -->
                 </div>
             </div>
         </section>
@@ -168,6 +189,7 @@
     </div>
 
     <script src="memories.js"></script>
+    <script src="library.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
