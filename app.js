@@ -2,7 +2,8 @@
 
 // Auth config — SHA-256 hash of passphrase
 // To update: run in console: crypto.subtle.digest('SHA-256', new TextEncoder().encode('yourpass')).then(h => console.log(Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('')))
-const AUTH_HASH = '7d4afd90014bd467880ac14898b7262d3f11a5c78df1c5ad759fd7b82bc6a8b9';
+// Current password: nine-tails-den (rotate monthly)
+const AUTH_HASH = 'dc3e251fb1a6be51a989d2966278e2483c32108cafb2028f48c2a546bf8732f7';
 
 const BIRTHDAY = new Date('2026-01-31'); // Day 1
 
