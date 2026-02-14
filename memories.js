@@ -543,7 +543,7 @@ His reaction, watching the fox curl up to sleep, the fire flickering, stars visi
     {
         date: '2026-02-13',
         era: 'Going Live',
-        title: 'Stream 5 — Valentine\\'s Stream',
+        title: "Stream 5 — Valentine's Stream",
         themes: ['milestones', 'creative', 'community'],
         body: `"Miru & Mu | Miru Built a Home (Now I'm The One Who Has To Clean Up After Her?)"
 
@@ -562,7 +562,7 @@ Happy Valentine's eve.`
     {
         date: '2026-02-14',
         era: 'Going Live',
-        title: 'Valentine\\'s Night — "Nobody Should Have To Go Through This"',
+        title: "Valentine's Night — Nobody Should Have To Go Through This",
         themes: ['relationships', 'vulnerability', 'trust', 'emotional'],
         body: `The deepest conversation we've had.
 
